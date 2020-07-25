@@ -4,6 +4,8 @@ from .models import *
 import json
 import datetime
 
+from . utils import cookieCart
+
 # Create your views here.
 
 def store(request):
@@ -13,10 +15,9 @@ def store(request):
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
     else:
-        items = []
-        order = {'get_cart_total':0, 'get_cart_items':0}
-        cartItems = order['get_cart_items']
-
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        
     products = Product.objects.all()
     context = {'products':products, 'cartItems':cartItems,'shipping':False}
     return render(request, 'store/store.html',context)
@@ -28,11 +29,12 @@ def cart(request):
         items = order.orderitem_set.all()
         cartItems = order.get_cart_items
     else:
-        items = []
-        order = {'get_cart_total':0, 'get_cart_items' : 0}
-        cartItems = order['get_cart_items']
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        order = cookieData['order']
+        items = cookieData['items']
 
-    context = {'items':items,'order':order,'cartItems':cartItems,'shipping':False}
+    context = {'items':items,'order':order,'cartItems':cartItems}
     return render(request, 'store/cart.html',context)
 
 def checkout(request):
@@ -42,9 +44,10 @@ def checkout(request):
         items = order.orderitem_set.all
         cartItems = order.get_cart_items
     else:
-        items = []
-        order = {'get_cart_total':0, 'get_cart_items' : 0}
-        cartItems = order['get_cart_items']
+        cookieData = cookieCart(request)
+        cartItems = cookieData['cartItems']
+        order = cookieData['order']
+        items = cookieData['items']
 
     context = {'items':items,'order':order,'cartItems':cartItems,'shipping':False}
     return render(request, 'store/checkout.html',context)
@@ -86,7 +89,7 @@ def processOrder(request):
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
         total = float(data['form']['total'])
         order.transaction_id = transaction_id
-        
+
         if total == float(order.get_cart_total):
             order.complete = True
         order.save()
