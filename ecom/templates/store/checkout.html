@@ -61,12 +61,11 @@
         {% endfor %}
           <h5>Items:   {{order.get_cart_items}}</h5>
           <h5>Total:   {{order.get_cart_total|floatformat:2}}</h5>
-      </div>
+        </div>
     </div>
   </div>
 
-  <script src="https://www.paypal.com/sdk/js?client-id=ASuiOWbFbWBT5i0NoJQYGVtj7-p_5glzGAZU2HnW-uae6T9ly4DTFY2ueiiON-_W3IUQvgK46BaJQPdM&currency=USD&disable-funding=credit">
-  </script>
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
  <script>
    var total = '{{order.get_cart_total}}'
     // Render the PayPal button into #paypal-button-container
